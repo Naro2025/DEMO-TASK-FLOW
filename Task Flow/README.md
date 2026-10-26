@@ -111,4 +111,6 @@ En un host con sistema de archivos efímero (por ejemplo, el plan gratuito de Re
 
 ## Screenshots
 
-> Pendiente: agregar capturas de la vista principal, estados vacío/error y vista responsive.
+![Vista principal](screenshots/TaskFlow1.png)
+![Vista principal](screenshots/TaskFlow2.png)
+![Vista principal](screenshots/TaskFlow3.png)
