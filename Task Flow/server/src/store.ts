@@ -1,0 +1,66 @@
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import type { Task } from "./types";
+
+const DATA_DIR = path.resolve(__dirname, "../data");
+const DATA_FILE = path.join(DATA_DIR, "tasks.json");
+
+const SEED: Task[] = [
+  {
+    id: "seed-5",
+    title: "Preparar la demo para el portafolio",
+    status: "pending",
+    createdAt: "2026-10-24T10:45:00.000Z",
+  },
+  {
+    id: "seed-4",
+    title: "Escribir el README del proyecto",
+    status: "pending",
+    createdAt: "2026-10-23T14:00:00.000Z",
+  },
+  {
+    id: "seed-3",
+    title: "Conectar la API de tareas",
+    status: "pending",
+    createdAt: "2026-10-22T08:15:00.000Z",
+  },
+  {
+    id: "seed-2",
+    title: "Maquetar la pantalla principal",
+    status: "done",
+    createdAt: "2026-10-21T11:30:00.000Z",
+  },
+  {
+    id: "seed-1",
+    title: "Definir el alcance del proyecto",
+    status: "done",
+    createdAt: "2026-10-20T09:00:00.000Z",
+  },
+];
+
+export async function writeTasks(tasks: Task[]): Promise<void> {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  const temporaryFile = `${DATA_FILE}.tmp`;
+  await fs.writeFile(temporaryFile, `${JSON.stringify(tasks, null, 2)}\n`, "utf8");
+  await fs.rename(temporaryFile, DATA_FILE);
+}
+
+export async function ensureData(): Promise<void> {
+  try {
+    await fs.access(DATA_FILE);
+  } catch {
+    await writeTasks(SEED);
+  }
+}
+
+export async function readTasks(): Promise<Task[]> {
+  await ensureData();
+  const raw = await fs.readFile(DATA_FILE, "utf8");
+  const data: unknown = JSON.parse(raw);
+
+  if (!Array.isArray(data)) {
+    throw new Error("El archivo de tareas no contiene una lista válida.");
+  }
+
+  return data as Task[];
+}
